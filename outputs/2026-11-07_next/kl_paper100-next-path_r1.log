@@ -1,0 +1,273 @@
+/home/seczone/.local/lib/python3.11/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+/home/seczone/anaconda3/lib/python3.11/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+{
+  "checkpoint": "/home/seczone/ysz/outputs/checkpoints/ProToDFL-data-n_cls2.0-ti-1-step-0-dy-0-t_max-100-cs-random-hops-2-mo0.1-per-0-mdlresnet18-cm500-total_clnt100-neighbor100-seed0-tagpaper100-next-path/round_1",
+  "scope": "base",
+  "n_pairs": 2000,
+  "n_degenerate_pairs": 1690,
+  "n_pairs_clean": 310,
+  "overall_spearman_kl_vs_delta_clean": 0.37660689574347733,
+  "overall_kendall_kl_vs_delta_clean": 0.2951260013921179,
+  "overall_spearman_kl_vs_delta_loss_clean": 0.29820757316255314,
+  "mean_delta_clean": -0.016386445096122512,
+  "median_delta_clean": 0.0,
+  "negative_transfer_fraction_clean": 0.22903225806451613,
+  "zero_delta_fraction_clean": 0.7193548387096774,
+  "mean_top1_regret_clean": 0.026127946127946118,
+  "per_target": [
+    {
+      "target": 9,
+      "spearman_kl_vs_delta": 0.06101622862745443,
+      "top1_kl_candidate": 1,
+      "top1_kl_delta": 0.04999999999999993,
+      "best_candidate": 1,
+      "best_delta": 0.04999999999999993,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 27,
+      "spearman_kl_vs_delta": -0.08781418413475012,
+      "top1_kl_candidate": 22,
+      "top1_kl_delta": 0.010000000000000009,
+      "best_candidate": 55,
+      "best_delta": 0.04999999999999993,
+      "top1_regret": 0.039999999999999925
+    },
+    {
+      "target": 50,
+      "spearman_kl_vs_delta": -0.5357142857142858,
+      "top1_kl_candidate": 55,
+      "top1_kl_delta": -0.06999999999999995,
+      "best_candidate": 53,
+      "best_delta": 0.020000000000000018,
+      "top1_regret": 0.08999999999999997
+    },
+    {
+      "target": 51,
+      "spearman_kl_vs_delta": -0.12552411131335847,
+      "top1_kl_candidate": 55,
+      "top1_kl_delta": -0.19999999999999996,
+      "best_candidate": 53,
+      "best_delta": -0.08999999999999997,
+      "top1_regret": 0.10999999999999999
+    },
+    {
+      "target": 56,
+      "spearman_kl_vs_delta": -0.5575344042821014,
+      "top1_kl_candidate": 51,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 51,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 63,
+      "spearman_kl_vs_delta": 0.20326901363514754,
+      "top1_kl_candidate": 69,
+      "top1_kl_delta": -0.20999999999999996,
+      "best_candidate": 1,
+      "best_delta": -0.010000000000000009,
+      "top1_regret": 0.19999999999999996
+    },
+    {
+      "target": 71,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 73,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 72,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 73,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 73,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 72,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 75,
+      "spearman_kl_vs_delta": 0.30037570459305535,
+      "top1_kl_candidate": 46,
+      "top1_kl_delta": -0.010101010101010083,
+      "best_candidate": 84,
+      "best_delta": 0.02020202020202022,
+      "top1_regret": 0.030303030303030304
+    },
+    {
+      "target": 80,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 84,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 81,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 84,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 82,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 84,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 83,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 84,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 84,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 83,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 85,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 83,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 86,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 83,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 87,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 83,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    }
+  ],
+  "kl_bins_clean": [
+    {
+      "count": 39,
+      "kl_min": 0.49205517768859863,
+      "kl_max": 5.588005781173706,
+      "delta_mean": -0.05743589743589743,
+      "delta_median": -0.040000000000000036,
+      "delta_std": 0.07124237966331587,
+      "delta_min": -0.20999999999999996,
+      "delta_max": 0.04999999999999993,
+      "negative_transfer_fraction": 0.5641025641025641
+    },
+    {
+      "count": 39,
+      "kl_min": 5.878194332122803,
+      "kl_max": 14.854721546173096,
+      "delta_mean": -0.03897176897176895,
+      "delta_median": -0.029999999999999916,
+      "delta_std": 0.05324662958405806,
+      "delta_min": -0.19999999999999996,
+      "delta_max": 0.04999999999999993,
+      "negative_transfer_fraction": 0.7948717948717948
+    },
+    {
+      "count": 39,
+      "kl_min": 14.902068614959717,
+      "kl_max": 1313.5689697265625,
+      "delta_mean": -0.016923076923076916,
+      "delta_median": 0.0,
+      "delta_std": 0.0481565160969226,
+      "delta_min": -0.21999999999999997,
+      "delta_max": 0.039999999999999925,
+      "negative_transfer_fraction": 0.2564102564102564
+    },
+    {
+      "count": 39,
+      "kl_min": 1313.6497192382812,
+      "kl_max": 1322.9764404296875,
+      "delta_mean": -0.005128205128205127,
+      "delta_median": 0.0,
+      "delta_std": 0.02479369180232526,
+      "delta_min": -0.1499999999999999,
+      "delta_max": 0.0,
+      "negative_transfer_fraction": 0.05128205128205128
+    },
+    {
+      "count": 39,
+      "kl_min": 1323.0250854492188,
+      "kl_max": 1330.5846557617188,
+      "delta_mean": -0.00487179487179487,
+      "delta_median": 0.0,
+      "delta_std": 0.02560767061281312,
+      "delta_min": -0.16000000000000003,
+      "delta_max": 0.0,
+      "negative_transfer_fraction": 0.05128205128205128
+    },
+    {
+      "count": 39,
+      "kl_min": 1330.7901611328125,
+      "kl_max": 1346.6326904296875,
+      "delta_mean": 0.0,
+      "delta_median": 0.0,
+      "delta_std": 0.0,
+      "delta_min": 0.0,
+      "delta_max": 0.0,
+      "negative_transfer_fraction": 0.0
+    },
+    {
+      "count": 38,
+      "kl_min": 1346.6953735351562,
+      "kl_max": 1578.9403076171875,
+      "delta_mean": -0.004473684210526314,
+      "delta_median": 0.0,
+      "delta_std": 0.0216062087106379,
+      "delta_min": -0.13,
+      "delta_max": 0.0,
+      "negative_transfer_fraction": 0.05263157894736842
+    },
+    {
+      "count": 38,
+      "kl_min": 1580.4677734375,
+      "kl_max": 2741.120849609375,
+      "delta_mean": -0.002628920786815523,
+      "delta_median": 0.0,
+      "delta_std": 0.01617291748078719,
+      "delta_min": -0.09999999999999998,
+      "delta_max": 0.01010101010101011,
+      "negative_transfer_fraction": 0.05263157894736842
+    }
+  ]
+}

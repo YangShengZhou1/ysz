@@ -1,0 +1,183 @@
+/home/seczone/.local/lib/python3.11/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+  return self.fget.__get__(instance, owner)()
+/home/seczone/anaconda3/lib/python3.11/site-packages/scipy/stats/_stats_py.py:5445: ConstantInputWarning: An input array is constant; the correlation coefficient is not defined.
+  warnings.warn(stats.ConstantInputWarning(warn_msg))
+{
+  "checkpoint": "/home/seczone/ysz/outputs/checkpoints/ProToDFL-data-my_part0.3-ti-1-step-0-dy-0-t_max-100-cs-random-hops-2-mo0.1-per-0-mdlresnet18-cm500-total_clnt100-neighbor100-seed0-tagpaper100-next-dir/round_1",
+  "scope": "base",
+  "n_pairs": 2000,
+  "n_degenerate_pairs": 1845,
+  "n_pairs_clean": 155,
+  "overall_spearman_kl_vs_delta_clean": -0.38818491797022914,
+  "overall_kendall_kl_vs_delta_clean": -0.3083705097197664,
+  "overall_spearman_kl_vs_delta_loss_clean": 0.13654904494626338,
+  "mean_delta_clean": 0.003612903225806455,
+  "median_delta_clean": 0.0,
+  "negative_transfer_fraction_clean": 0.0,
+  "zero_delta_fraction_clean": 0.9096774193548387,
+  "mean_top1_regret_clean": 0.007500000000000007,
+  "per_target": [
+    {
+      "target": 64,
+      "spearman_kl_vs_delta": -0.020059103942374965,
+      "top1_kl_candidate": 69,
+      "top1_kl_delta": 0.010000000000000009,
+      "best_candidate": 1,
+      "best_delta": 0.07000000000000006,
+      "top1_regret": 0.06000000000000005
+    },
+    {
+      "target": 92,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 93,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 93,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 92,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 95,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 69,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 96,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 69,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 97,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 69,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 98,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 69,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    },
+    {
+      "target": 99,
+      "spearman_kl_vs_delta": null,
+      "top1_kl_candidate": 69,
+      "top1_kl_delta": 0.0,
+      "best_candidate": 1,
+      "best_delta": 0.0,
+      "top1_regret": 0.0
+    }
+  ],
+  "kl_bins_clean": [
+    {
+      "count": 20,
+      "kl_min": 1.3288348317146301,
+      "kl_max": 1325.3781127929688,
+      "delta_mean": 0.025500000000000023,
+      "delta_median": 0.030000000000000027,
+      "delta_std": 0.0247941525364349,
+      "delta_min": 0.0,
+      "delta_max": 0.07000000000000006,
+      "negative_transfer_fraction": 0.0
+    },
+    {
+      "count": 20,
+      "kl_min": 1326.9991455078125,
+      "kl_max": 1340.0630493164062,
+      "delta_mean": 0.0,
+      "delta_median": 0.0,
+      "delta_std": 0.0,
+      "delta_min": 0.0,
+      "delta_max": 0.0,
+      "negative_transfer_fraction": 0.0
+    },
+    {
+      "count": 20,
+      "kl_min": 1341.5630493164062,
+      "kl_max": 1351.0736694335938,
+      "delta_mean": 0.0,
+      "delta_median": 0.0,
+      "delta_std": 0.0,
+      "delta_min": 0.0,
+      "delta_max": 0.0,
+      "negative_transfer_fraction": 0.0
+    },
+    {
+      "count": 19,
+      "kl_min": 1351.1144409179688,
+      "kl_max": 1364.564697265625,
+      "delta_mean": 0.0,
+      "delta_median": 0.0,
+      "delta_std": 0.0,
+      "delta_min": 0.0,
+      "delta_max": 0.0,
+      "negative_transfer_fraction": 0.0
+    },
+    {
+      "count": 19,
+      "kl_min": 1365.5476684570312,
+      "kl_max": 1382.4490966796875,
+      "delta_mean": 0.0,
+      "delta_median": 0.0,
+      "delta_std": 0.0,
+      "delta_min": 0.0,
+      "delta_max": 0.0,
+      "negative_transfer_fraction": 0.0
+    },
+    {
+      "count": 19,
+      "kl_min": 1382.9591064453125,
+      "kl_max": 1405.2735595703125,
+      "delta_mean": 0.0026315789473684236,
+      "delta_median": 0.0,
+      "delta_std": 0.007841928645132291,
+      "delta_min": 0.0,
+      "delta_max": 0.030000000000000027,
+      "negative_transfer_fraction": 0.0
+    },
+    {
+      "count": 19,
+      "kl_min": 1408.5068359375,
+      "kl_max": 1449.3485107421875,
+      "delta_mean": 0.0,
+      "delta_median": 0.0,
+      "delta_std": 0.0,
+      "delta_min": 0.0,
+      "delta_max": 0.0,
+      "negative_transfer_fraction": 0.0
+    },
+    {
+      "count": 19,
+      "kl_min": 1450.9979858398438,
+      "kl_max": 2374.449951171875,
+      "delta_mean": 0.0,
+      "delta_median": 0.0,
+      "delta_std": 0.0,
+      "delta_min": 0.0,
+      "delta_max": 0.0,
+      "negative_transfer_fraction": 0.0
+    }
+  ]
+}

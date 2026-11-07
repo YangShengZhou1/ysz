@@ -25,6 +25,15 @@ AC = {
     )
     for tag in ("dir", "path") for r in (250, 500)
 }
+REP = ROOT / "outputs/experiments/2026-11-07_repeat"
+RP = {
+    f"{tag}_r{r}": json.loads(
+        (REP / f"repeat_paper100-next-{tag}_r{r}.json").read_text(encoding="utf-8")
+    )
+    for tag in ("dir", "path") for r in (250, 500)
+}
+with (REP / "rule_hit_small_table.csv").open(encoding="utf-8", newline="") as f:
+    HIT = list(csv.DictReader(f))
 
 
 def kl(tag, r):
@@ -201,7 +210,7 @@ def build():
         "两格的模型都练成熟了。r1 退化头 84% 到 92%, 零收益 91% 到 94%; 到 r250 / r500 退化头降到 1% 以下, 收益分布打开。r1 不适合做排序或重放判断。",
         "同一目标换伙伴的收益差别很大。r500 目标内极差 Dirichlet 格 6.34 pp, Pathological 格 17.76 pp, r250 的 Pathological 格达到 27.58 pp。差别量级远大于抽样噪声。",
         "KL 的排序能力没有随训练恢复。Dirichlet 格 r500 首选命中 5/100, 等于随机基线; 目标内 Spearman +0.067。Pathological 格命中升到 22/100, 但目标内 Spearman 为 -0.023。KL 能区分标签分布是否同源, 排不出同类候选的次序。",
-        "差别经过 1 个本地 epoch 仍然存在, 但挑出来的优势没有带到核查集。Dirichlet 格 r500 的 KL 伙伴和选择集最优伙伴重放后分别比不聚合低 6.25 pp 和 7.15 pp。Pathological 格两轮的表现接近不聚合。选择集挑出的伙伴与 KL 挑的只有 28% 到 47% 重合, 两个信号都不稳定。",
+        "差别经过 1 个本地 epoch 仍然存在, 但挑出来的优势没有带到核查集。Dirichlet 格 r500 的 KL 伙伴和选择集最优伙伴重放后分别比不聚合低 6.25 pp 和 7.15 pp。Pathological 格两轮的表现接近不聚合。选择集挑出的伙伴与 KL 挑的只有 28% 到 47% 重合, 两个信号都不稳定。这是两条规则各挑一个候选时的平均表现, 不代表全部候选没有正增益, 见 6.1 和 11 节。",
         "跳数在两格都比 KL 更能看出平均收益。r500 的 Dirichlet 格从 1 跳 +2.17 pp 降到 3 跳 +1.18 pp; Pathological 格从 1 跳 +0.16 pp 降到 4 跳 -4.31 pp。事后最优伙伴约 7 成落在两跳内, 远跳平均有害。按 11-05 指导的分支判断, 多跳发现的优先级可以降低。",
         "推测瓶颈在选伙伴的信号, 不在候选池大小。候选本身有可用差异, 但 KL 和少量选择集反馈都不足以在核查集上稳定选对。后续若要设计采纳规则, 需要比单批选择集损失更稳的验证信号, 并把取得候选模型的通信成本一并计入。",
         "延迟收益线索确实存在。每格 400 对里有 36 到 60 对即时不占优、训练 1 个 epoch 后转为改善, 涉及 26 到 36 个目标。但反向变化更多, dir r500 有 92 对即时占优训练后变差。平均增益从即时 +1.78 pp 转为重放后 -6.03 pp。事后最优伙伴的 KL 平均排名为 2.00 到 2.24, 接近 4 个候选的随机期望 2.5。",
@@ -210,10 +219,10 @@ def build():
 
     h2(doc, "8.1 当前阻塞与待定事项")
     for text in [
-        "老师的三条分岔逐条对照。收益差别在核查集和 1 个 epoch 后确实留得住, 但用 KL 或选择集 loss 挑出来的优势留不住, 第一条不能判为成立。",
-        "即时看到的聚合收益在重放后普遍反转。dir r500 即时平均 +1.52 pp, 重放后 KL 伙伴相对不聚合为 -6.25 pp。按老师的第二条分岔, 应降低精细选邻的优先级, 转去分析聚合与本地训练的关系。",
+        "老师的三条分岔逐条对照。候选池里确实有跨 r250 和 r500 都优于自己练的伙伴, Dirichlet 格 73 对涉及 40 个目标, Pathological 格 45 对涉及 32 个目标。差别在核查集和 1 个 epoch 后留得住, 第一条成立。",
+        "规则各挑一个候选时平均不占优, 这说明的是选择信号不够, 不是候选池没有好伙伴。6.1 和 11 节的全候选结果支持这个区分, 不应据此降低精细选邻的优先级。",
         "有帮助的伙伴不主要在远处。两格约 7 成的事后最优伙伴落在两跳内, 跳数越远平均收益越低, 不需要重点发展多跳。",
-        "当前阻塞: 按结果落在第二条分岔, 但下一项机制按老师要求由双方一起确定, 本轮不自行设计采纳规则。若要继续走用反馈选伙伴这条路, 需要先解决选择集信号泛化不到核查集的问题, 并把取得候选模型的下载通信成本计入。",
+        "当前阻塞: 按结果落在第一条分岔, 下一步该设计简单的选择或采纳规则, 但按老师要求由双方一起确定, 本轮不自行设计。若要继续走用反馈选伙伴这条路, 需要比单批选择集损失更稳的验证信号, 并把取得候选模型的下载通信成本计入。",
     ]:
         bullet(doc, text, size=9.5)
 
@@ -226,6 +235,7 @@ def build():
         ["快照元数据", "outputs/2026-11-07_next/metadata/*_metadata.json"],
         ["全候选重放输出", "outputs/2026-11-07_next/allcand_*.csv, allcand_*.json"],
         ["分支起点核对", "outputs/2026-11-07_next/bn_check.json"],
+        ["重复校验与规则命中小表", "outputs/2026-11-07_repeat/"],
         ["交付压缩包", "deliverables/反馈_2026-11-07.zip"],
         ["训练日志", "outputs/2026-11-07_next/logs/"],
         ["代码", "scripts/kl_benefit_distribution.py, same_target_replay_paper100.py, paper100_candidate_diff.py, _remote_summarize_next.py"],
@@ -279,6 +289,62 @@ def build():
 
     h2(doc, "10.5 取舍")
     para(doc, "按 11-05 指导和检查清单, 只跑论文里出现的格子。alpha 取 0.1 或 0.5, seed 变体, 客户端数变体都不是论文设定, 不做。Ring, Grid, Exp 三种拓扑以及 CIFAR-100, Tiny-ImageNet 留到后续。", size=9.5)
+
+    h1(doc, "11 重复校验与规则命中")
+
+    h2(doc, "11.1 设置")
+    para(doc, "按老师要求先确认同一个伙伴重复跑能否对上, 再看换伙伴效果。固定 10 个客户端, 两格各取编号 0 到 4, 目标事先写死, 不按结果筛选。用两格 r250 和 r500 共 4 个快照, 不重新训练。三分支各独立重复 3 遍。", size=9.5)
+    para(doc, "训练图片预先按固定种子增强成固定批次, 三组三遍共用; 固定随机种子与 cuDNN 确定性开关, 所有分支从同一模型出发, 优化器每次重建, 评价用 eval 模式, 各练 1 个 epoch。与上一趟重放的差别是上一趟每轮现场随机增强, 本轮图片批次固定, 两组结果口径不同。", size=9.5)
+
+    h2(doc, "11.2 重复性")
+    table(doc, ["配置", "组合数", "三遍 acc 全同", "loss 最大差"], [
+        [f"{tag} r{r}", RP[f'{tag}_r{r}']['n_groups'],
+         f"{RP[f'{tag}_r{r}']['groups_with_identical_acc']}/{RP[f'{tag}_r{r}']['n_groups']}",
+         f"{RP[f'{tag}_r{r}']['max_ver_loss_gap_across_repeats']:.4f}"]
+        for tag in ("dir", "path") for r in (250, 500)
+    ], widths=[4.0, 4.0, 4.0, 4.0], size=9)
+    caption(doc, "表 13 组合数是目标数乘三分支数。三遍重复的核查集准确率全部逐位相同, loss 差异为 0。")
+
+    h2(doc, "11.3 三组对照")
+    table(doc, ["配置", "自己练后", "KL 伙伴后", "选择集伙伴后", "KL 增益 (pp)", "选择增益 (pp)"], [
+        [f"{tag} r{r}",
+         f"{RP[f'{tag}_r{r}']['branches']['none']['ver_acc_after_mean']:.3f}",
+         f"{RP[f'{tag}_r{r}']['branches']['kl_top1']['ver_acc_after_mean']:.3f}",
+         f"{RP[f'{tag}_r{r}']['branches']['select_best']['ver_acc_after_mean']:.3f}",
+         f"{RP[f'{tag}_r{r}']['branches']['kl_top1']['gain_vs_none_mean_pp']:+.2f}",
+         f"{RP[f'{tag}_r{r}']['branches']['select_best']['gain_vs_none_mean_pp']:+.2f}"]
+        for tag in ("dir", "path") for r in (250, 500)
+    ], widths=[2.4, 2.6, 2.6, 2.8, 2.8, 2.8], size=8.5)
+    caption(doc, "表 14 固定 10 个客户端上练完 1 epoch 后的核查集准确率。增益相对自己练分支。与表 7 的 100 目标全量口径不同。")
+
+    h2(doc, "11.4 规则命中小表")
+    table(doc, ["划分", "目标", "事后最优", "r500 增益 (pp)", "KL 命中", "选择集命中", "两轮都正的候选数"], [
+        [r["partition"], r["target"], r["best_after"], r["best_gain_r500_pp"],
+         "是" if r["kl_hit"] == "1" else "否",
+         "是" if r["select_hit"] == "1" else "否",
+         r["candidates_both_rounds_positive"]]
+        for r in HIT
+    ], widths=[2.0, 1.6, 2.2, 2.8, 2.2, 2.4, 2.8], size=8)
+    caption(doc, "表 15 每目标 4 个候选全部列出。事后最优按 r500 重放后增益最大取; 两轮都正指同一候选在 r250 和 r500 都优于自己练。逐候选增益见 rule_hit_small_table.csv。")
+    table(doc, ["划分", "KL 命中事后最优", "选择集命中事后最优", "有跨两轮正增益候选的目标数"], [
+        [tag,
+         f"{sum(1 for r in HIT if r['partition'] == tag and r['kl_hit'] == '1')}/5",
+         f"{sum(1 for r in HIT if r['partition'] == tag and r['select_hit'] == '1')}/5",
+         f"{sum(1 for r in HIT if r['partition'] == tag and int(r['candidates_both_rounds_positive']) > 0)}/5"]
+        for tag in ("dir", "path")
+    ], widths=[3.0, 4.4, 4.4, 4.2], size=8.5)
+    caption(doc, "表 16 规则命中汇总。4 个候选中随机挑中事后最优的期望是 25%。部分事后最优本身增益为 0 或负, 命中不等于有实际收益。")
+
+    h2(doc, "11.5 老师两问的回答")
+    for text in [
+        "有没有伙伴能稳定比自己练更好: 有, 但不多。全量数据里 Dirichlet 格 73 对、Pathological 格 45 对在 r250 和 r500 都优于自己练, 分别涉及 40 和 32 个目标。固定 10 个目标里有 4 个目标能找到这类候选。这些是事后把全部候选重放一遍才数出来的。",
+        "现有规则能不能提前挑中: 不能稳定。三分支里 KL 伙伴和选择集伙伴在四个快照上都没有稳定优于自己练, 只有 dir r250 约 +0.4 pp, 其余从 0 到 -4.8 pp。固定 10 目标上 KL 与选择集各命中事后最优 4/10, 高于随机基线 25%, 但远不足以使用。",
+        "按 11-05 指导第 71 行的三条分岔, 结果落在第一条: 候选里有可用伙伴, 缺的是选择或采纳规则。下一项机制由老师一起确定。",
+    ]:
+        bullet(doc, text, size=9.5)
+
+    h2(doc, "11.6 文件")
+    para(doc, "重复校验逐行输出在 outputs/2026-11-07_repeat/repeat_*.csv 与 repeat_*.json, 规则命中小表在 rule_hit_small_table.csv, 脚本是 scripts/repeat_replay_check.py 与 repeat_rule_hit.py。", size=9.5)
 
     DOCS.mkdir(parents=True, exist_ok=True)
     doc.save(TARGET)

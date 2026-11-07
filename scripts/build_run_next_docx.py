@@ -19,6 +19,12 @@ TARGET = DOCS / "23_四项实验数据报告_2026-11-07.docx"
 
 S = json.loads((EXP / "summary.json").read_text(encoding="utf-8"))
 P = json.loads((EXP / "partition_stats.json").read_text(encoding="utf-8"))
+AC = {
+    f"{tag}_r{r}": json.loads(
+        (EXP / f"allcand_paper100-next-{tag}_r{r}.json").read_text(encoding="utf-8")
+    )
+    for tag in ("dir", "path") for r in (250, 500)
+}
 
 
 def kl(tag, r):
@@ -102,6 +108,7 @@ def build():
         for tag in ("dir", "path") for r in (1, 250, 500)
     ], widths=[3.0, 2.4, 2.4, 3.0, 3.0, 2.2], size=8.5)
     caption(doc, "表 3 每快照 100 个目标, 每目标 20 个候选, 共 2000 对。主统计基于全部配对。")
+    para(doc, "结果按目标客户端和快照轮次分别保留。本轮固定 seed 0 和只聚合 base, 不做种子与聚合范围变体, 所以没有这两列分组。", size=9.5)
     table(doc, ["配置", "KL 首选命中", "混算 Spearman", "目标内 Spearman"], [
         [f"{tag} r{r}", kl(tag, r)["top1_hit"],
          f"{kl(tag, r)['overall_rho']:+.3f}",
@@ -145,6 +152,7 @@ def build():
           rr, widths=[2.4, 3.4, 3.4, 3.4, 1.9, 1.9], size=8)
     caption(doc, "表 7 核查集准确率。数值为聚合后即时 / 1 个本地 epoch 后。增益是重放后相对不聚合分支的差。")
     para(doc, "所有分支从同一模型出发, 只聚合 base, 保留目标自己的 head, 样本顺序固定, 优化器每次重建, 评价统一用 eval 模式。100 个目标全部保留, 不做二次筛选。", size=9.5)
+    para(doc, "分支起点核对: 模型用 GroupNorm 替换 BatchNorm, state_dict 中没有 BN 运行统计键。对 dir r500 的前 5 个目标核对, head 的 2 个键在各分支起点逐元素相同, 60 个 base 可学习参数按聚合权重改变, 没有计划外的差异。核对输出见 bn_check.json。", size=9.5)
 
     h1(doc, "6 挑验分离")
     sr = []
@@ -163,7 +171,20 @@ def build():
     table(doc, ["配置", "选择集 / 核查集", "选择与 KL 重合", "选择集增益 改善/退化/不明显", "即时落后训练后改善"],
           sr, widths=[2.6, 3.2, 3.0, 4.4, 3.2], size=8.5)
     caption(doc, "表 8 留出验证集按类别分层固定切两半。伙伴择优只看选择集, 成绩只报核查集, 测试集未用于选伙伴。")
-    para(doc, "选择依据是聚合后选择集交叉熵损失最小的伙伴, 选定后固定, 不根据后续效果重挑。每个候选的即时选择集损失保存在逐目标 CSV 的 candidates_json 字段。本轮只重放三个固定分支, 全部候选训练后的输出未采集, 延迟收益线索只按三分支统计。", size=9.5)
+    para(doc, "选择依据是聚合后选择集交叉熵损失最小的伙伴, 选定后固定, 不根据后续效果重挑。每个候选的即时选择集损失保存在逐目标 CSV 的 candidates_json 字段。三个固定分支用于最终对照, 全部 4 个候选的训练后输出另行采集, 见 6.1。", size=9.5)
+
+    h2(doc, "6.1 全部候选的重放输出")
+    table(doc, ["配置", "即时平均增益 (pp)", "1 epoch 后平均增益 (pp)", "即时落后训练后改善", "即时占优训练后变差", "有延迟候选的目标数", "事后最优的 KL 平均排名"], [
+        [f"{tag} r{r}",
+         f"{AC[f'{tag}_r{r}']['mean_gain_before_pp']:+.2f}",
+         f"{AC[f'{tag}_r{r}']['mean_gain_after_pp']:+.2f}",
+         AC[f'{tag}_r{r}']['delayed_gain'],
+         AC[f'{tag}_r{r}']['reversed_gain'],
+         AC[f'{tag}_r{r}']['targets_with_delayed_candidate'],
+         f"{AC[f'{tag}_r{r}']['mean_kl_rank_of_best_after']:.2f}"]
+        for tag in ("dir", "path") for r in (250, 500)
+    ], widths=[2.0, 2.4, 2.8, 2.4, 2.4, 1.8, 2.2], size=8)
+    caption(doc, "表 9 每目标 4 个候选全部重放, 每格 100 目标 400 对。增益相对同目标的不聚合分支。KL 平均排名在 4 个候选中取值 1 到 4, 随机期望为 2.5。")
 
     h1(doc, "7 口径")
     for text in [
@@ -183,6 +204,16 @@ def build():
         "差别经过 1 个本地 epoch 仍然存在, 但挑出来的优势没有带到核查集。Dirichlet 格 r500 的 KL 伙伴和选择集最优伙伴重放后分别比不聚合低 6.25 pp 和 7.15 pp。Pathological 格两轮的表现接近不聚合。选择集挑出的伙伴与 KL 挑的只有 28% 到 47% 重合, 两个信号都不稳定。",
         "跳数在两格都比 KL 更能看出平均收益。r500 的 Dirichlet 格从 1 跳 +2.17 pp 降到 3 跳 +1.18 pp; Pathological 格从 1 跳 +0.16 pp 降到 4 跳 -4.31 pp。事后最优伙伴约 7 成落在两跳内, 远跳平均有害。按 11-05 指导的分支判断, 多跳发现的优先级可以降低。",
         "推测瓶颈在选伙伴的信号, 不在候选池大小。候选本身有可用差异, 但 KL 和少量选择集反馈都不足以在核查集上稳定选对。后续若要设计采纳规则, 需要比单批选择集损失更稳的验证信号, 并把取得候选模型的通信成本一并计入。",
+        "延迟收益线索确实存在。每格 400 对里有 36 到 60 对即时不占优、训练 1 个 epoch 后转为改善, 涉及 26 到 36 个目标。但反向变化更多, dir r500 有 92 对即时占优训练后变差。平均增益从即时 +1.78 pp 转为重放后 -6.03 pp。事后最优伙伴的 KL 平均排名为 2.00 到 2.24, 接近 4 个候选的随机期望 2.5。",
+    ]:
+        bullet(doc, text, size=9.5)
+
+    h2(doc, "8.1 当前阻塞与待定事项")
+    for text in [
+        "老师的三条分岔逐条对照。收益差别在核查集和 1 个 epoch 后确实留得住, 但用 KL 或选择集 loss 挑出来的优势留不住, 第一条不能判为成立。",
+        "即时看到的聚合收益在重放后普遍反转。dir r500 即时平均 +1.52 pp, 重放后 KL 伙伴相对不聚合为 -6.25 pp。按老师的第二条分岔, 应降低精细选邻的优先级, 转去分析聚合与本地训练的关系。",
+        "有帮助的伙伴不主要在远处。两格约 7 成的事后最优伙伴落在两跳内, 跳数越远平均收益越低, 不需要重点发展多跳。",
+        "当前阻塞: 按结果落在第二条分岔, 但下一项机制按老师要求由双方一起确定, 本轮不自行设计采纳规则。若要继续走用反馈选伙伴这条路, 需要先解决选择集信号泛化不到核查集的问题, 并把取得候选模型的下载通信成本计入。",
     ]:
         bullet(doc, text, size=9.5)
 
@@ -193,10 +224,14 @@ def build():
         ["重放逐目标输出", "outputs/2026-11-07_next/replay_*.csv, replay_*.json"],
         ["汇总与划分统计", "outputs/2026-11-07_next/summary.json, partition_stats.json"],
         ["快照元数据", "outputs/2026-11-07_next/metadata/*_metadata.json"],
+        ["全候选重放输出", "outputs/2026-11-07_next/allcand_*.csv, allcand_*.json"],
+        ["分支起点核对", "outputs/2026-11-07_next/bn_check.json"],
+        ["交付压缩包", "deliverables/反馈_2026-11-07.zip"],
         ["训练日志", "outputs/2026-11-07_next/logs/"],
         ["代码", "scripts/kl_benefit_distribution.py, same_target_replay_paper100.py, paper100_candidate_diff.py, _remote_summarize_next.py"],
         ["仓库", "https://github.com/YangShengZhou1/ysz"],
     ], widths=[4.6, 11.4], size=8.5)
+    caption(doc, "表 10 交付材料位置。模型权重不上传 GitHub, 位置见第 7 节。")
 
     h1(doc, "10 旧方案材料与配置来源")
 
@@ -209,6 +244,7 @@ def build():
         ["指导记录 (10-15, 11-04, 11-05)", "研究前提, 本轮四项比较的设计, 原型固定的口径"],
         ["资料审阅与问题清单 (docs/06)", "论文设定与代码实现差异的逐条核对结果"],
     ], widths=[5.2, 10.8], size=8.5)
+    caption(doc, "表 11 旧方案材料清单及各自提供的内容。")
     para(doc, "扩刊初稿的数字未经验证, 只用来理解设定, 不作为结果依据。", size=9.5)
 
     h2(doc, "10.2 配置来源")
@@ -223,6 +259,7 @@ def build():
         ["快照轮次", "r1 / r250 / r500", "本轮自定义, 论文未报快照轮次"],
         ["20 候选, 验证集二分, 1 epoch 重放", "本轮四项比较", "11-05 指导第三节"],
     ], widths=[3.6, 4.0, 8.4], size=8.5)
+    caption(doc, "表 12 配置逐项来源。未在论文中出现的实现细节单独列出。")
 
     h2(doc, "10.3 为什么有 Dirichlet 和 Pathological 两格")
     para(doc, "论文在三个数据集下都按两种数据划分报结果, 主表的列就是 Dirichlet 和 Pathological。它们不是两个方法, 是同一方法在两种异质强度下的对照。", size=9.5)

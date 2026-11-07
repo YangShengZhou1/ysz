@@ -10,7 +10,7 @@ HERE = Path(__file__).resolve().parent
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
-from docx_helpers import bullet, caption, h1, new_doc, para, subtitle, table, title
+from docx_helpers import bullet, caption, h1, h2, new_doc, para, subtitle, table, title
 
 ROOT = HERE.parent
 EXP = ROOT / "outputs/experiments/2026-11-07_next"
@@ -197,6 +197,51 @@ def build():
         ["代码", "scripts/kl_benefit_distribution.py, same_target_replay_paper100.py, paper100_candidate_diff.py, _remote_summarize_next.py"],
         ["仓库", "https://github.com/YangShengZhou1/ysz"],
     ], widths=[4.6, 11.4], size=8.5)
+
+    h1(doc, "10 旧方案材料与配置来源")
+
+    h2(doc, "10.1 材料清单")
+    table(doc, ["材料", "提供的内容"], [
+        ["ICME 2025 论文 (copy.tex)", "方法框架与全部实验设置, 三种划分, 四种拓扑, 100 客户端, 500 轮, 骨干与超参"],
+        ["毕业论文终稿", "第三章完整方法描述, 消融数字, 拓扑示意图"],
+        ["扩刊初稿 (tmm_new.tex)", "三种划分与四种拓扑的扩展描述, 500 轮收敛表"],
+        ["答辩 PPT", "方法示意与主要结果图"],
+        ["指导记录 (10-15, 11-04, 11-05)", "研究前提, 本轮四项比较的设计, 原型固定的口径"],
+        ["资料审阅与问题清单 (docs/06)", "论文设定与代码实现差异的逐条核对结果"],
+    ], widths=[5.2, 10.8], size=8.5)
+    para(doc, "扩刊初稿的数字未经验证, 只用来理解设定, 不作为结果依据。", size=9.5)
+
+    h2(doc, "10.2 配置来源")
+    table(doc, ["项", "取值", "来源"], [
+        ["客户端 / 分组 / 轮数", "100 / 10 组 / 500", "ICME Experiment Setup"],
+        ["本地 epoch / batch / 优化器", "5 / 128 / SGD 0.1", "ICME Implementation Details"],
+        ["骨干与共享范围", "ResNet-18, 只共享特征提取器", "ICME Implementation Details"],
+        ["初始图", "随机连通图, 每点 10 邻居", "ICME Graph Topology and Communication Setup, 代码 cs=random"],
+        ["动态改边", "第 100 轮起", "论文 Performance with Dynamic Topology, 代码 change_neighbors"],
+        ["原型", "初始化后固定", "11-05 指导第 63 行, 代码 proto_update_each=0"],
+        ["学习率衰减", "关闭", "论文只写 lr 0.1, 代码默认每轮乘 0.998"],
+        ["快照轮次", "r1 / r250 / r500", "本轮自定义, 论文未报快照轮次"],
+        ["20 候选, 验证集二分, 1 epoch 重放", "本轮四项比较", "11-05 指导第三节"],
+    ], widths=[3.6, 4.0, 8.4], size=8.5)
+
+    h2(doc, "10.3 为什么有 Dirichlet 和 Pathological 两格")
+    para(doc, "论文在三个数据集下都按两种数据划分报结果, 主表的列就是 Dirichlet 和 Pathological。它们不是两个方法, 是同一方法在两种异质强度下的对照。", size=9.5)
+    para(doc, "Dirichlet 格取 alpha=0.3。每个客户端按抽出的类别比例拿样本, 主类占比高, 其他类仍有一些, 属于软偏斜。代码用 my_part 实现, 先抽 10 个 Dirichlet 先验, 组内 10 个客户端共用一个先验, 对应论文的 10 组组内同质。实测每客户端约 400 张样本, 非零类别均值 5.7。", size=9.5)
+    para(doc, "Pathological 格对 CIFAR-10 限定每客户端 2 类, CIFAR-100 是 20 类, Tiny-ImageNet 是 40 类。类别数是硬上限, 异质性更强。代码用 n_cls 加 partition_alpha=2 实现。实测每客户端约 400 张样本, 非零类别均值 2.2; 某类样本耗尽时会从其余类补齐, 所以个别客户端会略高于 2 类。", size=9.5)
+    para(doc, "选这两格有三个理由。论文主表就是这两列, 这是复现的最基本单位; 只换划分方式, 其余十项不动, 可以直接看出结论是否依赖划分; 两档异质强度差距大, 能检验 KL 的粗筛能力在更强异质性下是否变化。实测 KL 首选命中从 Dirichlet 格的 5/100 升到 Pathological 格的 22/100, 说明这个对照提供了新信息。", size=9.5)
+    para(doc, "第三种 Cross-Dataset 划分混合 CIFAR-10 和 CIFAR-100, 涉及两套标签空间, 本轮不做。早期脚本用的 dir 是全局 Dirichlet, 不构造 10 组, 与论文口径不符, 本轮已不用。", size=9.5)
+
+    h2(doc, "10.4 旧方案留下的空白")
+    for text in [
+        "论文里的协作价值由原型差异定义, 证据是整套框架对比和消融, 没有验证集选伙伴, 同一目标换伙伴这类实验。本轮四项比较补的就是排序层的证据。",
+        "毕业论文消融写总通信 115.5 MB, 但 ResNet-18 单份 base 就 42.6 MiB, 100 客户端, 10 邻居, 500 轮的模型交换量级远大于此。两者统计口径不同, 不能直接比较。本轮按实际张量元素数重新计量, 并把未计入项写明。",
+        "只共享 base, 保留本地分类头在旧方案和相关工作中已有, 不作为新贡献。",
+        "my_part 是 10 个共享先验近似分组, 不等同于严格的组内同质。报告按实际分布描述, 不写成完全复现分组。",
+    ]:
+        bullet(doc, text, size=9.5)
+
+    h2(doc, "10.5 取舍")
+    para(doc, "按 11-05 指导和检查清单, 只跑论文里出现的格子。alpha 取 0.1 或 0.5, seed 变体, 客户端数变体都不是论文设定, 不做。Ring, Grid, Exp 三种拓扑以及 CIFAR-100, Tiny-ImageNet 留到后续。", size=9.5)
 
     DOCS.mkdir(parents=True, exist_ok=True)
     doc.save(TARGET)

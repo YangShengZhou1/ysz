@@ -73,6 +73,16 @@ def para(doc, text: str, indent=True, size=10.5, space_after=4):
     return p
 
 
+def para_lead(doc, lead: str, rest: str, size=10.5, space_after=4):
+    p = doc.add_paragraph()
+    set_run(p.add_run(lead), size=size, bold=True, east="黑体")
+    set_run(p.add_run(rest), size=size)
+    p.paragraph_format.line_spacing = 1.35
+    p.paragraph_format.space_after = Pt(space_after)
+    p.paragraph_format.first_line_indent = Pt(size * 2)
+    return p
+
+
 def bullet(doc, text: str, size=10.5):
     p = doc.add_paragraph()
     set_run(p.add_run("· " + text), size=size)
